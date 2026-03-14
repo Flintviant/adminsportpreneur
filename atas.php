@@ -1,0 +1,306 @@
+<?php
+  session_start();
+
+  //  echo '<pre>';
+// print_r($_SESSION);
+// exit;
+
+  if (!isset($_SESSION['role_id']) || $_SESSION['role_id'] != 1) {
+      header("Location: login.php");
+      exit();
+  }
+  // panggil file koneksi
+  require_once 'koneksi.php';
+
+  $id_member = $_SESSION['id_member'] ?? null;
+
+  if ($id_member) {
+      $stmt = $conn->prepare(
+          "SELECT nm_member, gambar FROM member WHERE id_member = ?"
+      );
+      $stmt->bind_param("i", $id_member);
+      $stmt->execute();
+      $result = $stmt->get_result();
+
+      if ($row = $result->fetch_assoc()) {
+          $gambar = $row['gambar'];
+          $nama  = $row['nm_member'];
+      }
+  }
+
+  // order belum dibaca
+  $qOrders = mysqli_query($conn,"SELECT COUNT(*) as total FROM orders WHERE is_read=0");
+  $dOrders = mysqli_fetch_assoc($qOrders);
+  $totalOrders = $dOrders['total'];
+
+  // pesan pelatih belum dibaca
+  $qContact = mysqli_query($conn,"SELECT COUNT(*) as total FROM pelatih_contact WHERE is_read=0");
+  $dContact = mysqli_fetch_assoc($qContact);
+  $totalContact = $dContact['total'];
+
+  $totalNotif = $totalOrders + $totalContact;
+?>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Halaman Admin Sport Preneur</title>
+    <!-- plugins:css -->
+    <link rel="stylesheet" href="assets/vendors/mdi/css/materialdesignicons.min.css">
+    <link rel="stylesheet" href="assets/vendors/css/vendor.bundle.base.css">
+    <!-- endinject -->
+    <!-- Plugin css for this page -->
+    <!-- End plugin css for this page -->
+    <!-- inject:css -->
+    <!-- endinject -->
+    <!-- Layout styles -->
+    <link rel="stylesheet" href="assets/css/style.css">
+    <!-- End layout styles -->
+    <link rel="shortcut icon" href="assets/images/favicon.ico" />
+  </head>
+  <body>
+    <div class="container-scroller">
+      <!-- partial:partials/_navbar.html -->
+      <nav class="navbar default-layout-navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
+        <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center">
+          <a class="brand-logo" href="index.php"><img src="<?=$url_admin?>assets/images/logo_fimatha.png" alt="Fimatha Logo" class="img-fluid me-2" style="max-height: 55px;"></a>
+          <a class="navbar-brand brand-logo-mini" href="index.php"><img src="<?=$url_admin?>assets/images/logo_fimatha.png" alt="logo fimatha" style="max-height: 55px;"></a>
+        </div>
+        <div class="navbar-menu-wrapper d-flex align-items-stretch">
+          <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
+            <span class="mdi mdi-menu"></span>
+          </button>
+          <ul class="navbar-nav navbar-nav-right">
+            <li class="nav-item dropdown">
+              <a class="nav-link count-indicator dropdown-toggle" id="messageDropdown" href="#" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="mdi mdi-email-outline"></i>
+                <span class="count-symbol bg-warning"></span>
+              </a>
+              <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list" aria-labelledby="messageDropdown">
+                <h6 class="p-3 mb-0">Messages</h6>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item preview-item">
+                  <div class="preview-thumbnail">
+                    <img src="assets/images/faces/face4.jpg" alt="image" class="profile-pic">
+                  </div>
+                  <div class="preview-item-content d-flex align-items-start flex-column justify-content-center">
+                    <h6 class="preview-subject ellipsis mb-1 font-weight-normal">Mark send you a message</h6>
+                    <p class="text-gray mb-0"> 1 Minutes ago </p>
+                  </div>
+                </a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item preview-item">
+                  <div class="preview-thumbnail">
+                    <img src="assets/images/faces/face2.jpg" alt="image" class="profile-pic">
+                  </div>
+                  <div class="preview-item-content d-flex align-items-start flex-column justify-content-center">
+                    <h6 class="preview-subject ellipsis mb-1 font-weight-normal">Cregh send you a message</h6>
+                    <p class="text-gray mb-0"> 15 Minutes ago </p>
+                  </div>
+                </a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item preview-item">
+                  <div class="preview-thumbnail">
+                    <img src="assets/images/faces/face3.jpg" alt="image" class="profile-pic">
+                  </div>
+                  <div class="preview-item-content d-flex align-items-start flex-column justify-content-center">
+                    <h6 class="preview-subject ellipsis mb-1 font-weight-normal">Profile picture updated</h6>
+                    <p class="text-gray mb-0"> 18 Minutes ago </p>
+                  </div>
+                </a>
+                <div class="dropdown-divider"></div>
+                <h6 class="p-3 mb-0 text-center">4 new messages</h6>
+              </div>
+            </li>
+            <li class="nav-item dropdown">
+              <a class="nav-link count-indicator dropdown-toggle" 
+                 id="notificationDropdown" 
+                 href="#" 
+                 data-bs-toggle="dropdown">
+
+                <i class="mdi mdi-bell-outline"></i>
+
+                <?php if($totalNotif > 0){ ?>
+                <span class="count"><?= $totalNotif ?></span>
+                <?php } ?>
+
+              </a>
+                <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list">
+
+                  <h6 class="p-3 mb-0">Notifications</h6>
+                  <div class="dropdown-divider"></div>
+
+                  <?php if($totalOrders > 0){ ?>
+                  <a href="orders.php?read=1" class="dropdown-item preview-item">
+
+                  <div class="preview-thumbnail">
+                    <div class="preview-icon bg-success">
+                      <i class="mdi mdi-cart"></i>
+                    </div>
+                  </div>
+
+                  <div class="preview-item-content">
+                    <h6 class="preview-subject">Order Baru</h6>
+                    <p class="text-gray"><?= $totalOrders ?> order baru</p>
+                  </div>
+
+                </a>
+                <div class="dropdown-divider"></div>
+                <?php } ?>
+
+
+                <?php if($totalContact > 0){ ?>
+                <a href="pelatih_contact.php?read=1" class="dropdown-item preview-item">
+
+                <div class="preview-thumbnail">
+                  <div class="preview-icon bg-warning">
+                    <i class="mdi mdi-message"></i>
+                  </div>
+                </div>
+
+                <div class="preview-item-content">
+                  <h6 class="preview-subject">Pesan Pelatih</h6>
+                  <p class="text-gray"><?= $totalContact ?> pesan baru</p>
+                </div>
+
+                </a>
+                <div class="dropdown-divider"></div>
+                <?php } ?>
+
+                <h6 class="p-3 mb-0 text-center">
+                  <a href="notifications.php">See all notifications</a>
+                </h6>
+
+              </div>
+            </li>
+            <li class="nav-item d-none d-lg-block full-screen-link">
+              <a class="nav-link">
+                <i class="mdi mdi-fullscreen" id="fullscreen-button"></i>
+              </a>
+            </li>
+            <li class="nav-item nav-logout d-none d-lg-block">
+              <a class="nav-link" id="signout2">
+                <i class="mdi mdi-power"></i>
+              </a>
+            </li>
+            <li class="nav-item nav-profile dropdown">
+              <a class="nav-link dropdown-toggle" id="profileDropdown" href="#" data-bs-toggle="dropdown" aria-expanded="false">
+                <div class="nav-profile-img">
+                  <img src="assets/images/faces/<?=$gambar?>" alt="image">
+                  <span class="availability-status online"></span>
+                </div>
+                <div class="nav-profile-text">
+                  <p class="mb-1 text-black"><?= $nama; ?></p>
+                </div>
+              </a>
+              <div class="dropdown-menu navbar-dropdown" aria-labelledby="profileDropdown">
+                <a class="dropdown-item" href="#">
+                  <i class="mdi mdi-cached me-2 text-success"></i> Activity Log </a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" id="signout">
+                  <i class="mdi mdi-logout me-2 text-primary"></i> Signout </a>
+              </div>
+            </li>
+          </ul>
+          <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" data-toggle="offcanvas">
+            <span class="mdi mdi-menu"></span>
+          </button>
+        </div>
+      </nav>
+      <!-- partial -->
+      <div class="container-fluid page-body-wrapper">
+        <!-- partial:partials/_sidebar.html -->
+        <nav class="sidebar sidebar-offcanvas" id="sidebar">
+          <ul class="nav">
+            <li class="nav-item nav-profile">
+              <a href="#" class="nav-link">
+                <div class="nav-profile-image">
+                  <img src="assets/images/faces/<?=$gambar?>" alt="profile">
+                  <span class="login-status online"></span>
+                  <!--change to offline or busy as needed-->
+                </div>
+                <div class="nav-profile-text d-flex flex-column">
+                  <span class="font-weight-bold mb-2"><?= $nama ?></span>
+                  <span class="text-secondary text-small"><?=$_SESSION['role_name'];?></span>
+                </div>
+                <i class="mdi mdi-bookmark-check text-success nav-profile-badge"></i>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="index.php">
+                <span class="menu-title">Dashboard</span>
+                <i class="mdi mdi-home menu-icon"></i>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" data-bs-toggle="collapse" href="#artikel-pages" aria-expanded="false" aria-controls="general-pages">
+                <span class="menu-title">Artikel</span>
+                <i class="menu-arrow"></i>
+                <i class="mdi mdi-format-list-bulleted menu-icon"></i>
+              </a>
+              <div class="collapse" id="artikel-pages">
+                <ul class="nav flex-column sub-menu">
+                  <li class="nav-item"> <a class="nav-link" href="daftar-artikel.php"> Daftar Artikel </a></li>
+                  <li class="nav-item"> <a class="nav-link" href="tambah-artikel.php"> Tambah Artikel </a></li>
+                </ul>
+              </div>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" data-bs-toggle="collapse" href="#modul-pages" aria-expanded="false" aria-controls="general-pages">
+                <span class="menu-title">Inkubator</span>
+                <i class="menu-arrow"></i>
+                <i class="mdi mdi-format-list-bulleted menu-icon"></i>
+              </a>
+              <div class="collapse" id="modul-pages">
+                <ul class="nav flex-column sub-menu">
+                  <li class="nav-item"> <a class="nav-link" href="daftar-modul.php"> Daftar Modul </a></li>
+                  <li class="nav-item"> <a class="nav-link" href="<?=$url_admin?>sub-modul.php"> Sub Modul </a></li>
+                  <li class="nav-item"> <a class="nav-link" href="tambah-modul.php"> Tambah Modul </a></li>
+                  <li class="nav-item"> <a class="nav-link" href="tambah-sub-modul.php"> Tambah Sub Modul </a></li>
+                </ul>
+              </div>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" data-bs-toggle="collapse" href="#modul-shop" aria-expanded="false" aria-controls="general-pages">
+                <span class="menu-title">Shop</span>
+                <i class="menu-arrow"></i>
+                <i class="mdi mdi-basket menu-icon"></i>
+              </a>
+              <div class="collapse" id="modul-shop">
+                <ul class="nav flex-column sub-menu">
+                  <li class="nav-item"> <a class="nav-link" href="daftar-produk.php"> Daftar Produk </a></li>
+                  <li class="nav-item"> <a class="nav-link" href="tambah-produk.php"> Tambah Produk </a></li>
+                  <li class="nav-item"> <a class="nav-link" href="kategori.php"> Kategori Produk </a></li>
+                </ul>
+              </div>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" data-bs-toggle="collapse" href="#modul-sponsor" aria-expanded="false" aria-controls="general-pages">
+                <span class="menu-title">Sponsor</span>
+                <i class="menu-arrow"></i>
+                <i class="mdi mdi-basket menu-icon"></i>
+              </a>
+              <div class="collapse" id="modul-sponsor">
+                <ul class="nav flex-column sub-menu">
+                  <li class="nav-item"> <a class="nav-link" href="daftar-sponsor.php"> Daftar Sponsor </a></li>
+                  <li class="nav-item"> <a class="nav-link" href="tambah-sponsor.php"> Tambah Sponsor </a></li>
+                </ul>
+              </div>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" data-bs-toggle="collapse" href="#modul-event" aria-expanded="false" aria-controls="general-pages">
+                <span class="menu-title">Event</span>
+                <i class="menu-arrow"></i>
+                <i class="mdi mdi-basket menu-icon"></i>
+              </a>
+              <div class="collapse" id="modul-event">
+                <ul class="nav flex-column sub-menu">
+                  <li class="nav-item"> <a class="nav-link" href="daftar-event.php"> Daftar Event </a></li>
+                  <li class="nav-item"> <a class="nav-link" href="tambah-event.php"> Tambah Event </a></li>
+                </ul>
+              </div>
+            </li>
+          </ul>
+        </nav>
