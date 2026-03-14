@@ -10,7 +10,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     $id_barang     = $_POST['id_barang'];
     $id_kategori     = (int)$_POST['id_kategori'];
-    $id_jenis     = (int)$_POST['id_jenis'];
+    $id_jenis        = isset($_POST['id_jenis']) ? (int)$_POST['id_jenis'] : 0;
     $nama_barang     = trim($_POST['nama_barang']);
     $merk            = trim($_POST['merk']);
     $kota            = trim($_POST['kota']);
@@ -113,7 +113,7 @@ include 'atas.php';
 
             <div class="col-md-6 mb-3">
               <label>Jenis Barang</label>
-              <select name="id_kategori" class="form-control" required>
+              <select name="id_jenis" class="form-control" required>
                 <option value="">-- Pilih Jenis Barang --</option>
                 <?php while($j = $jenis->fetch_assoc()): ?>
                   <option value="<?= $j['id_jenis']; ?>">
