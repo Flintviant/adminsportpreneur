@@ -2,6 +2,12 @@
 session_start();
 include 'koneksi.php'; // file koneksi database
 
+$success = false;
+
+if (isset($_GET['success'])) {
+    $success = true;
+}
+
 // Jika sudah login, redirect ke dashboard
 if (isset($_SESSION['user_id'])) {
     header("Location: index.php");
@@ -71,6 +77,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <body class="bg-light">
   <div class="container d-flex justify-content-center align-items-center vh-100">
     <div class="card shadow-lg p-4" style="max-width:400px; width:100%;">
+        <?php if ($success) { ?>
+            <div class="alert alert-success">
+                Registrasi berhasil! Silakan login.
+            </div>
+        <?php } ?>
       <h3 class="text-center mb-3">Login Admin</h3>
 
       <?php if (!empty($error)): ?>

@@ -10,6 +10,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $password = trim($_POST['password']);
     $confirm  = trim($_POST['confirm']);
     $role = '1';
+    $tlp = rand(10000, 99999);
+    $address = 'kantor pusat';
 
     if (empty($username) || empty($password) || empty($confirm)) {
         $message = "Semua field wajib diisi!";
@@ -29,12 +31,34 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $hashed = password_hash($password, PASSWORD_DEFAULT);
 
             // Simpan user baru
-            $stmt = $conn->prepare("INSERT INTO login (user, pass, id_role) VALUES (?, ?, ?)");
-            $stmt->bind_param("ssi", $username, $hashed, $role);
-            if ($stmt->execute()) {
-                $message = "Registrasi berhasil! Silakan login.";
-            } else {
-                $message = "Terjadi kesalahan, coba lagi.";
+            try {
+                // insert member
+                $stmt1 = $conn->prepare(
+                    "INSERT INTO member (nm_member, telepon, alamat_member, id_role)
+                     VALUES (?, ?, ?, ?)"
+                );
+                $stmt1->bind_param("sssi", $username, $tlp, $address, $role);
+                $stmt1->execute();
+
+                // ambil id_member BARU
+                $id_member = $conn->insert_id;
+
+                // insert login
+                $stmt2 = $conn->prepare(
+                    "INSERT INTO login (user, pass, id_member, id_role)
+                     VALUES (?, ?, ?, ?)"
+                );
+                $stmt2->bind_param("ssii", $username, $hashed, $id_member, $role);
+                $stmt2->execute();
+
+                $conn->commit();
+
+                header("Location: login.php?success=1");
+                exit;
+
+            } catch (mysqli_sql_exception $e) {
+                $conn->rollback();
+                die("Error: " . $e->getMessage());
             }
         }
     }
