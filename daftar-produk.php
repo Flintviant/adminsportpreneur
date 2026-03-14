@@ -78,7 +78,7 @@ $result = $conn->query($query);
 
                   <td>
                     <?php if (!empty($row['foto_produk'])): ?>
-                      <img src="uploads/<?= htmlspecialchars($row['foto_produk']); ?>" 
+                      <img src="uploads/produk/<?= htmlspecialchars($row['foto_produk']); ?>" 
                            width="60" 
                            class="img-thumbnail">
                     <?php else: ?>
