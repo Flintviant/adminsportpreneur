@@ -28,8 +28,8 @@
       <!-- partial:partials/_navbar.html -->
       <nav class="navbar default-layout-navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
         <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center">
-          <a class="brand-logo" href="index.php"><img src="<?=$url_utama?>assets/images/logo_fimatha.png" alt="Fimatha Logo" class="img-fluid me-2" style="max-height: 55px;"></a>
-          <a class="navbar-brand brand-logo-mini" href="index.php"><img src="<?=$url_utama?>assets/images/logo_fimatha.png" alt="logo" style="max-height: 55px;"></a>
+          <a class="brand-logo" href="index.php"><img src="<?=$url_admin?>assets/images/logo-sport-nav.png" alt="Fimatha Logo" class="img-fluid me-2" style="max-height: 55px;"></a>
+          <a class="navbar-brand brand-logo-mini" href="index.php"><img src="<?=$url_admin?>assets/images/logo-sport-nav-mini.png" alt="logo" style="max-height: 55px;"></a>
         </div>
         <div class="navbar-menu-wrapper d-flex align-items-stretch">
           <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">

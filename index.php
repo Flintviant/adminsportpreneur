@@ -15,6 +15,16 @@ include 'atas.php';
   $result = $conn->query($sql);
   $jumlah_artikel = $result ? $result->num_rows : 0;
 
+  // Query jumlah artikel
+  $sql_barang = "SELECT * FROM barang ORDER BY id DESC";
+  $result_barang = $conn->query($sql_barang);
+  $jumlah_barang = $result_barang ? $result_barang->num_rows : 0;
+
+  // Query jumlah artikel
+  $sql_sponsor = "SELECT * FROM kontak_sponsor ORDER BY id_sponsor DESC";
+  $result_sponsor = $conn->query($sql_sponsor);
+  $jumlah_sponsor = $result_sponsor ? $result_sponsor->num_rows : 0;
+
 ?>
 
 <!-- partial -->
@@ -51,10 +61,10 @@ include 'atas.php';
         <div class="card bg-gradient-info card-img-holder text-white">
           <div class="card-body">
             <img src="assets/images/dashboard/circle.svg" class="card-img-absolute" alt="circle-image" />
-            <h4 class="font-weight-normal mb-3">Total Pembaca 
+            <h4 class="font-weight-normal mb-3">Total Produk 
               <i class="mdi mdi-chart-line mdi-24px float-right"></i>
             </h4>
-            <h2 class="mb-5">45,6334</h2>
+            <h2 class="mb-5"><?= htmlspecialchars($jumlah_barang) ?></h2>
           </div>
         </div>
       </div>
@@ -62,10 +72,10 @@ include 'atas.php';
         <div class="card bg-gradient-success card-img-holder text-white">
           <div class="card-body">
             <img src="assets/images/dashboard/circle.svg" class="card-img-absolute" alt="circle-image" />
-            <h4 class="font-weight-normal mb-3">Total Pengunjung 
+            <h4 class="font-weight-normal mb-3">Total Sponsor
               <i class="mdi mdi-walk mdi-24px float-right"></i>
             </h4>
-            <h2 class="mb-5">95,5741</h2>
+            <h2 class="mb-5"><?= htmlspecialchars($jumlah_sponsor) ?></h2>
           </div>
         </div>
       </div>
