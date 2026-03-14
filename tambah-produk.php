@@ -37,7 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         INSERT INTO barang 
         (id_barang, id_kategori, id_jenis, nama_barang, merk, kota, harga_beli, harga_jual, 
          satuan_barang, stok, foto_produk, tgl_input, tgl_update)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ");
 
     $stmt->bind_param(
