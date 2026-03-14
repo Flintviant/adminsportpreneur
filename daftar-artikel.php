@@ -1,5 +1,5 @@
 <?php
-include 'atas-artikel.php';
+include 'atas.php';
 
   // Ambil semua artikel
   $sql = "SELECT * FROM tb_artikel ORDER BY id DESC";
@@ -70,4 +70,4 @@ include 'atas-artikel.php';
       </div>
     </div>
 
-<?php include 'bawah-artikel.php'; ?>
+<?php include 'bawah.php'; ?>
